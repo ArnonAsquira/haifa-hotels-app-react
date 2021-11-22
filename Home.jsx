@@ -3,30 +3,52 @@ import React, { createContext } from 'react';
 import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, ImageBackground, Pressable}  from 'react-native';
 // import { hotelsObjArray } from './assets/hotels-data';
 import { HotelsGallery } from './components/HotelsGallery'
-import { NativeRouter, Route, Switch } from "react-router-native";
-import Home from './Home'
 import { HotelPage } from './components/HotelPage';
+import { NativeRouter, Route, Switch, Redirect } from "react-router-native";
+import { createPortal } from 'react-dom';
 
 
-
-export default class App extends React.Component {
+export default class Home extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      hotel: Home.state
+      hotel: undefined,
+      enterd: 1
     }
   }
+  handlePress(e) {
+    this.setState({
+      hotel: e
+    });
+    alert(e.name);
+ }
 
+ handleReturn() {
+     this.setState({
+        hotel: undefined
+     })
+ }
+ 
 render() {
-
-  console.log(Home);
-
+    console.log(this.state.hotel)
   return (
     < SafeAreaView style={styles.container} >
       <ImageBackground  resizeMode="cover" style={styles.image} source={{uri: "https://www.israel21c.org/wp-content/uploads/2017/08/shutterstock_turkishmarket-1168x657.jpg"}}>
-    
-          <Home />
-
+      <Text style={styles.header}>
+      Search And Book Hotels In Haifa
+      </ Text>
+      <NativeRouter >
+          <Route exact path="/" exact>
+                 <Pressable >
+                     <HotelsGallery onPress={(e) => {this.handlePress(e)}} />
+                     { this.state.hotel === undefined ? <Redirect to="/"/> : <Redirect to="/hotel-page"/>}
+                 </Pressable>
+        </Route>
+        <Route exact path="/hotel-page">
+            <HotelPage hotel={this.state.hotel} onPress={() => this.handleReturn()} />
+            { this.state.hotel === undefined ? <Redirect to="/"/> : <Redirect to="/hotel-page"/>}
+        </Route>
+     </NativeRouter>
        < StatusBar /> 
        </ImageBackground>
     </ SafeAreaView>
